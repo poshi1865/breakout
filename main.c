@@ -1,29 +1,33 @@
-#include <SDL2/SDL_surface.h>
 #include <stdio.h>
+#include <stdbool.h>
+
+#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 1080
+#define HEIGHT 720
 
 void update();
 void render();
+
+SDL_Rect square;
+int xoffset;
+int yoffset;
 
 int main(void) {
 
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
-    SDL_Surface* bitmap_surface = NULL;
-    SDL_Texture* bitmap_tex = NULL;
+    
+    bool running = true;
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) {
         fprintf(stderr, "SDL_Init() has failed ");
         printf("%s\n", SDL_GetError());
         return 1;
     }
-    
-    IMG_Init(IMG_INIT_JPG); 
 
     printf("Initialization successful\n");
 
@@ -32,27 +36,39 @@ int main(void) {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    bitmap_surface = IMG_Load("image.jpg");
-    bitmap_tex = SDL_CreateTextureFromSurface(renderer, bitmap_surface);
-    SDL_FreeSurface(bitmap_surface);
-
     if (window == NULL) {
         printf("ERROR CREATING WINDOW. Error: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, bitmap_tex, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    //Init square
+    square.w = 20;
+    square.h = 20;
+    xoffset = 1;
+    yoffset = 1;
 
-    SDL_DestroyTexture(bitmap_tex);
+    square.x = 10;
+    square.y = 10;
 
-    SDL_Delay(5000);
+
+    while (running) {
+        SDL_Event e;
+        
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) 
+                running = false;
+        }
+
+        SDL_Delay(2);
+        update();
+        render(renderer); 
+    }
+
+    //Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
-    IMG_Quit();
     SDL_Quit();
 
     return 0;
@@ -60,8 +76,37 @@ int main(void) {
 
 void update() {
 
+    if (square.x == WIDTH - square.w) {
+        xoffset = -1; 
+    }
+    else if (square.y == HEIGHT - square.h) {
+        yoffset = -1; 
+    }
+    else if (square.x == 0) {
+        xoffset = 1; 
+    }
+    else if (square.y == 0) {
+        yoffset = 1; 
+    }
+
+    square.x += xoffset;
+    square.y += yoffset;
 }
 
-void render() {
+void render(SDL_Renderer* renderer) {
 
+    //Renderer color white
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+    //Clear Screen
+    SDL_RenderClear(renderer);
+
+    //Renderer color red
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+
+    //Draw filled square
+    SDL_RenderFillRect(renderer, &square);
+
+    //Draw
+    SDL_RenderPresent(renderer);
 }
