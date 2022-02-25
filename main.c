@@ -52,6 +52,10 @@ int main(void) {
     square.y = 10;
 
 
+    /*Game loop
+     * Need to make loop run 60 times a second
+     * 
+     * */
     while (running) {
         SDL_Event e;
         
