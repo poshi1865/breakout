@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL.h>
@@ -11,10 +12,14 @@
 
 void update();
 void render();
+void listenForKeyEvents();
 
-SDL_Rect square;
-int xoffset;
-int yoffset;
+//Key event mappings
+bool keyUp, keyDown, keyLeft, keyRight;
+
+SDL_Rect paddle;
+int xspeed;
+int yspeed;
 
 int main(void) {
 
@@ -28,11 +33,10 @@ int main(void) {
         printf("%s\n", SDL_GetError());
         return 1;
     }
-
     printf("Initialization successful\n");
 
-    window = SDL_CreateWindow("Example", SDL_WINDOWPOS_CENTERED,
-                                        SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
+    window = SDL_CreateWindow("Essdl", SDL_WINDOWPOS_CENTERED,
+                                       SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -42,21 +46,25 @@ int main(void) {
         return 1;
     }
 
-    //Init square
-    square.w = 20;
-    square.h = 20;
-    xoffset = 1;
-    yoffset = 1;
+    //Init paddle
+    paddle.w = 100;
+    paddle.h = 20;
+    xspeed = 1;
+    yspeed = 1;
 
-    square.x = 10;
-    square.y = 10;
+    paddle.x = WIDTH / 2 - paddle.w;
+    paddle.y = HEIGHT - 50;
 
 
     /*Game loop
-     * Need to make loop run 60 times a second
-     * 
+     * TODO: Need to understand game loop timing
+     *  
      * */
+    const double UPS = 60.0;
+    clock_t lastTime = clock();
+    clock_t currentTime = clock();
     while (running) {
+        // Check if close button has been pressed
         SDL_Event e;
         
         while (SDL_PollEvent(&e)) {
@@ -64,12 +72,24 @@ int main(void) {
                 running = false;
         }
 
-        SDL_Delay(2);
-        update();
+        currentTime = clock();
+
+        long double deltaTime = (long double)(currentTime - lastTime) / CLOCKS_PER_SEC;
+        if (deltaTime > (long double)1.0f / UPS) {
+            lastTime = currentTime;
+            currentTime = clock(); 
+        }
+
+        SDL_Delay(5);
+        printf("keyUp: %d\n", keyUp);
+        printf("keyDown: %d\n", keyDown);
+        printf("keyLeft: %d\n", keyLeft);
+        printf("keyRight: %d\n", keyRight);
+        update(deltaTime);
         render(renderer); 
     }
 
-    //Cleanup
+    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
@@ -78,23 +98,86 @@ int main(void) {
     return 0;
 }
 
-void update() {
+void listenForKeyEvents() {
 
-    if (square.x == WIDTH - square.w) {
-        xoffset = -1; 
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {
+        //If it is a key press
+        if (e.type == SDL_KEYDOWN) {
+            switch(e.key.keysym.sym) {
+                case SDLK_UP:
+                    keyUp = true;
+                    break;
+                case SDLK_DOWN:
+                    keyDown = true;
+                    break;
+                case SDLK_LEFT:
+                    keyLeft = true;
+                    break;
+                case SDLK_RIGHT:
+                    keyRight = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //If it is a key release
+        if (e.type == SDL_KEYUP) {
+            switch(e.key.keysym.sym) {
+                case SDLK_UP:
+                    keyUp = false;
+                    break;
+                case SDLK_DOWN:
+                    keyDown = false;
+                    break;
+                case SDLK_LEFT:
+                    keyLeft = false;
+                    break;
+                case SDLK_RIGHT:
+                    keyRight = false;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
-    else if (square.y == HEIGHT - square.h) {
-        yoffset = -1; 
+}
+
+void update(long double deltaTime) {
+
+    listenForKeyEvents();
+
+    if (keyUp) {
+        paddle.y -= yspeed; 
     }
-    else if (square.x == 0) {
-        xoffset = 1; 
+    if (keyDown) {
+        paddle.y += yspeed; 
     }
-    else if (square.y == 0) {
-        yoffset = 1; 
+    if (keyLeft) {
+        paddle.x -= xspeed; 
+    }
+    if (keyRight) {
+        paddle.x += yspeed; 
     }
 
-    square.x += xoffset;
-    square.y += yoffset;
+    //TODO: Paddle out of bounds
+
+    //Handling Collision
+    //if (paddle.x == WIDTH - paddle.w) {
+    //    xspeed = -1; 
+    //}
+    //else if (paddle.y == HEIGHT - paddle.h) {
+    //    yspeed = -1; 
+    //}
+    //else if (paddle.x == 0) {
+    //    xspeed = 1; 
+    //}
+    //else if (paddle.y == 0) {
+    //    yspeed = 1; 
+    //}
+
+    //Updating position of paddle
 }
 
 void render(SDL_Renderer* renderer) {
@@ -108,8 +191,8 @@ void render(SDL_Renderer* renderer) {
     //Renderer color red
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
-    //Draw filled square
-    SDL_RenderFillRect(renderer, &square);
+    //Draw filled paddle
+    SDL_RenderFillRect(renderer, &paddle);
 
     //Draw
     SDL_RenderPresent(renderer);
