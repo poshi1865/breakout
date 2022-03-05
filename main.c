@@ -21,12 +21,13 @@ SDL_Rect paddle;
 int xspeed;
 int yspeed;
 
+bool running = true;
+
 int main(void) {
 
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     
-    bool running = true;
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) {
         fprintf(stderr, "SDL_Init() has failed ");
@@ -60,32 +61,19 @@ int main(void) {
      * TODO: Need to understand game loop timing
      *  
      * */
-    const double UPS = 60.0;
-    clock_t lastTime = clock();
-    clock_t currentTime = clock();
+    double lastTime = SDL_GetTicks();
     while (running) {
-        // Check if close button has been pressed
-        SDL_Event e;
-        
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) 
-                running = false;
-        }
 
-        currentTime = clock();
 
-        long double deltaTime = (long double)(currentTime - lastTime) / CLOCKS_PER_SEC;
-        if (deltaTime > (long double)1.0f / UPS) {
-            lastTime = currentTime;
-            currentTime = clock(); 
-        }
-
-        SDL_Delay(5);
         printf("keyUp: %d\n", keyUp);
         printf("keyDown: %d\n", keyDown);
         printf("keyLeft: %d\n", keyLeft);
         printf("keyRight: %d\n", keyRight);
-        update(deltaTime);
+
+        double currentTime = SDL_GetTicks();
+        double deltaTime = currentTime - lastTime;
+        listenForKeyEvents();
+        update(deltaTime / 10000);
         render(renderer); 
     }
 
@@ -102,6 +90,8 @@ void listenForKeyEvents() {
 
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT) 
+            running = false;
         //If it is a key press
         if (e.type == SDL_KEYDOWN) {
             switch(e.key.keysym.sym) {
@@ -144,21 +134,19 @@ void listenForKeyEvents() {
     }
 }
 
-void update(long double deltaTime) {
-
-    listenForKeyEvents();
+void update(double deltaTime) {
 
     if (keyUp) {
-        paddle.y -= yspeed; 
+        paddle.y -= yspeed * deltaTime + 1; 
     }
     if (keyDown) {
-        paddle.y += yspeed; 
+        paddle.y += yspeed * deltaTime + 1; 
     }
     if (keyLeft) {
-        paddle.x -= xspeed; 
+        paddle.x -= xspeed * deltaTime + 1; 
     }
     if (keyRight) {
-        paddle.x += yspeed; 
+        paddle.x += yspeed * deltaTime + 1;  
     }
 
     //TODO: Paddle out of bounds
