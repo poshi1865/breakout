@@ -18,8 +18,8 @@ void listenForKeyEvents();
 bool keyUp, keyDown, keyLeft, keyRight;
 
 SDL_Rect paddle;
-int xspeed;
-int yspeed;
+float xspeed;
+float yspeed;
 
 bool running = true;
 
@@ -50,8 +50,8 @@ int main(void) {
     //Init paddle
     paddle.w = 100;
     paddle.h = 20;
-    xspeed = 1;
-    yspeed = 1;
+    xspeed = 1.0f;
+    yspeed = 1.0f;
 
     paddle.x = WIDTH / 2 - paddle.w;
     paddle.y = HEIGHT - 50;
@@ -64,17 +64,12 @@ int main(void) {
     double lastTime = SDL_GetTicks();
     while (running) {
 
-
-        printf("keyUp: %d\n", keyUp);
-        printf("keyDown: %d\n", keyDown);
-        printf("keyLeft: %d\n", keyLeft);
-        printf("keyRight: %d\n", keyRight);
-
         double currentTime = SDL_GetTicks();
         double deltaTime = currentTime - lastTime;
         listenForKeyEvents();
-        update(deltaTime / 10000);
+        update(deltaTime);
         render(renderer); 
+        lastTime = currentTime;
     }
 
     // Cleanup
@@ -137,16 +132,17 @@ void listenForKeyEvents() {
 void update(double deltaTime) {
 
     if (keyUp) {
-        paddle.y -= yspeed * deltaTime + 1; 
+        paddle.y -= (int)(yspeed * deltaTime); 
+        printf("%f\n", yspeed * deltaTime);
     }
     if (keyDown) {
-        paddle.y += yspeed * deltaTime + 1; 
+        paddle.y += (int)(yspeed * deltaTime);
     }
     if (keyLeft) {
-        paddle.x -= xspeed * deltaTime + 1; 
+        paddle.x -= (int)(xspeed * deltaTime);
     }
     if (keyRight) {
-        paddle.x += yspeed * deltaTime + 1;  
+        paddle.x += (int)(xspeed * deltaTime);
     }
 
     //TODO: Paddle out of bounds
