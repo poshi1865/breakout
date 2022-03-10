@@ -1,12 +1,13 @@
 #include "paddle.h"
 #include <stdlib.h>
 
-Paddle* createPaddle(int x, int y, int width, int height, int color) {
+Paddle* createPaddle(int x, int y, int width, int height, int speed) {
     Paddle* paddle = malloc(sizeof(Paddle));
     paddle->x = x;
     paddle->y = y;
     paddle->width = width;
     paddle->height = height;
+    paddle->speed = speed;
 
     return paddle;
 }

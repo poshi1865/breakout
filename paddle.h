@@ -7,9 +7,10 @@ struct Paddle {
     int width;
     int height;
     int color;
+    int speed;
 }typedef Paddle;
 
-Paddle* createPaddle(int x, int y, int width, int height, int color);
+Paddle* createPaddle(int x, int y, int width, int height, int speed);
 void destroyPaddle(Paddle* paddle);
 
 #endif
