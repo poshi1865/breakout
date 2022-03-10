@@ -7,7 +7,9 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 
+#include "draw.h"
 #include "paddle.h"
+
 
 #define WIDTH 1080
 #define HEIGHT 720
@@ -15,14 +17,16 @@
 void update();
 void render();
 void listenForKeyEvents();
-void loadEntities();
+void initEntities();
 
 //Key event mappings
 bool keyUp, keyDown, keyLeft, keyRight;
 
 //Entities
-struct Paddle* paddle;
-SDL_Rect ballHitbox;
+Paddle* paddle;
+
+
+SDL_Rect ball;
 SDL_Texture* ballTexture;
 float ballSpeed;
 int ballDirectionX;
@@ -35,6 +39,8 @@ int main(void) {
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     
+    //init all the game entities
+    initEntities();
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) {
         fprintf(stderr, "SDL_Init() has failed ");
@@ -56,23 +62,15 @@ int main(void) {
 
     //Init ball
     ballTexture = IMG_LoadTexture(renderer, "palantir.png");
-    ballHitbox.x = WIDTH / 2.0;
-    ballHitbox.y = 10;
-    ballHitbox.w = 35;
-    ballHitbox.h = 35;
+    ball.x = WIDTH / 2.0;
+    ball.y = 10;
+    ball.w = 35;
+    ball.h = 35;
     ballSpeed = 1.0f;
     ballDirectionX = 1;
     ballDirectionY = 1;
 
     //Init paddle
-    paddle = malloc(sizeof(struct Paddle));
-    paddle->width = 100;
-    paddle->height = 20;
-    paddle->speed = 1.0f;
-
-    paddle->x = WIDTH / 2.0 - paddle->width;
-    paddle->y = HEIGHT - 50;
-
 
     /*Game loop
      * TODO: Need to understand game loop timing
@@ -96,13 +94,13 @@ int main(void) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
-    free(paddle);
     SDL_Quit();
 
     return 0;
 }
 
-void loadEntities() {
+void initEntities() {
+    paddle = createPaddle(10, 10, 100, 100, 0xAAAAAA);
 }
 
 void listenForKeyEvents() {
@@ -161,46 +159,49 @@ void update(double deltaTime) {
     //if (keyDown) {
     //    paddle->y += (int)(paddle->speed * deltaTime);
     //}
-    if (keyLeft) {
-        //Check for collision with left wall
-        if (paddle->x != 0) {
-            paddle->x -= (int)(paddle->speed * deltaTime);
-        }
-    }
-    if (keyRight) {
-        //Check for collision with left wall
-        if (paddle->x != WIDTH - paddle->width) {
-            paddle->x += (int)(paddle->speed * deltaTime);
-        }
-    }
+    //
+    //if (keyLeft) {
+    //    //Check for collision with left wall
+    //    if (paddle->x != 0) {
+    //        paddle->x -= (int)(paddle->speed * deltaTime);
+    //    }
+    //}
+    //if (keyRight) {
+    //    //Check for collision with left wall
+    //    if (paddle->x != WIDTH - paddle->width) {
+    //        paddle->x += (int)(paddle->speed * deltaTime);
+    //    }
+    //}
 
-    //Ball with wall collision
-    if (ballHitbox.x > WIDTH - ballHitbox.w) {
-        ballDirectionX = -1;
-    }
-    if (ballHitbox.y > HEIGHT - ballHitbox.h) {
-        ballDirectionY = -1;
-    }
-    if (ballHitbox.x < 0) {
-        ballDirectionX = 1;
-    }
-    if (ballHitbox.y < 0) {
-        ballDirectionY = 1;
-    }
+    ////Ball with wall collision
+    //if (ball.x > WIDTH - ballHitbox.w) {
+    //    ballDirectionX = -1;
+    //}
+    //if (ball.y > HEIGHT - ballHitbox.h) {
+    //    ballDirectionY = -1;
+    //}
+    //if (ball.x < 0) {
+    //    ballDirectionX = 1;
+    //}
+    //if (ball.y < 0) {
+    //    ballDirectionY = 1;
+    //}
 
-    //Ball with paddle collision
-    if (ballHitbox.y + ballHitbox.h > paddle->y &&
-        ballHitbox.x >= paddle->x &&
-        ballHitbox.x <= paddle->x + paddle->width) 
-    { 
+    ////Ball with paddle collision
+    //if (ball.y + ballHitbox.h > paddle->y &&
+    //    ball.x >= paddle->x &&
+    //    ball.x <= paddle->x + paddle-nclude "draw.h"
+    //    #include "paddle.h"
+    //    >width) 
+    //{ 
 
-        ballDirectionY = -1;
+    //    ballDirectionY = -1;
 
-    }
+    //}
 
 
-    ballHitbox.x += ballSpeed * ballDirectionX * deltaTime;
-    ballHitbox.y += ballSpeed * ballDirectionY * deltaTime;
+    ball.x += ballSpeed * ballDirectionX * deltaTime;
+    ball.y += ballSpeed * ballDirectionY * deltaTime;
 }
 
 void render(SDL_Renderer* renderer) {
@@ -216,14 +217,12 @@ void render(SDL_Renderer* renderer) {
 
     //Draw filled paddle
     SDL_Rect rect;
-    rect.x = paddle->x;
-    rect.y = paddle->y;
-    rect.w = paddle->width;
-    rect.h = paddle->height;
     SDL_RenderFillRect(renderer, &rect);
 
+    drawPaddle(paddle, renderer);
+
     //Draw Ball
-    SDL_RenderCopy(renderer, ballTexture, NULL, &ballHitbox);
+    SDL_RenderCopy(renderer, ballTexture, NULL, &ball);
 
     //Draw
     SDL_RenderPresent(renderer);
