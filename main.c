@@ -24,6 +24,7 @@ bool keyUp, keyDown, keyLeft, keyRight;
 
 //Entities
 Paddle* paddle;
+Ball* ball;
 
 bool running = true;
 
@@ -65,16 +66,18 @@ int main(void) {
         double deltaTime = currentTime - lastTime;
         listenForKeyEvents();
         if (deltaTime > (1.0 / updatesPerSecond) * 1000) {
-            update(deltaTime);
+            update(deltaTime / 10);
             lastTime = currentTime;
         }
         render(renderer); 
     }
 
     // Cleanup
+    destroyPaddle(paddle); 
+    destroyBall(ball);
+    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
     SDL_Quit();
 
     return 0;
@@ -82,7 +85,8 @@ int main(void) {
 
 void initEntities() {
     int w = 150;
-    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 1);
+    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 5);
+    ball = createBall(WIDTH / 2, HEIGHT / 2, 20, 20, 1, 1, 4);
 }
 
 void listenForKeyEvents() {
@@ -154,6 +158,36 @@ void update(double deltaTime) {
             paddle->x += (int)(paddle->speed * deltaTime);
         }
     }
+
+
+    //CHECKING BALL COLLIDING WITH WALL
+    if (ball->x >= WIDTH - ball->width) {
+        ball->directionX = -1;
+    }
+    if (ball->x <= 0) {
+        ball->directionX = 1;
+    }
+    if (ball->y >= HEIGHT - ball->height) {
+        ball->directionY = -1;
+    }
+    if (ball->y <= 0) {
+        ball->directionY = 1;
+    }
+
+    //CHECKING BALL COLLIDING WITH PADDLE
+    if (ball->x + ball->width >= paddle->x && ball->x <= paddle->x + paddle->width) {
+        if (ball->y + ball->height >= paddle->y) {
+            ball->directionY = -1;
+        }
+    }
+
+    ball->x += ball->directionX * ball->speed * deltaTime;
+    ball->y += ball->directionY * ball->speed * deltaTime;
+    printf("Ball Speed: %d\n", ball->speed);
+    printf("Ball x: %d\n", ball->x);
+    printf("Ball y: %d\n", ball->y);
+    printf("Ball directionX: %d\n", ball->directionX);
+    printf("Ball directionY: %d\n", ball->directionY);
 }
 
 void render(SDL_Renderer* renderer) {
@@ -163,7 +197,9 @@ void render(SDL_Renderer* renderer) {
     //Clear Screen
     SDL_RenderClear(renderer);
 
+    //Drawing the ball and the paddle
     drawPaddle(paddle, renderer);
+    drawBall(ball, renderer);
 
     // Present Buffer
     SDL_RenderPresent(renderer);

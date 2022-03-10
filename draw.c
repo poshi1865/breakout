@@ -11,3 +11,12 @@ void drawPaddle(Paddle* paddle, SDL_Renderer* renderer) {
     }
 }
 
+void drawBall(Ball* ball, SDL_Renderer* renderer) {
+    //Renderer color red
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xAA, 0xAA);
+    for (int i = ball->x; i < ball->width + ball->x; i++) {
+        for (int j = ball->y; j < ball->height + ball->y; j++) {
+            SDL_RenderDrawPoint(renderer, i, j);
+        }
+    }
+}
