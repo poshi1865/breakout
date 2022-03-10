@@ -78,15 +78,18 @@ int main(void) {
      * TODO: Need to understand game loop timing
      *  
      * */
+    int updatesPerSecond = 60;
     double lastTime = SDL_GetTicks();
     while (running) {
 
         double currentTime = SDL_GetTicks();
         double deltaTime = currentTime - lastTime;
         listenForKeyEvents();
-        update(deltaTime);
+        if (deltaTime > (1.0 / updatesPerSecond) * 1000) {
+            update(deltaTime);
+            lastTime = currentTime;
+        }
         render(renderer); 
-        lastTime = currentTime;
     }
 
     // Cleanup
@@ -171,7 +174,7 @@ void update(double deltaTime) {
         }
     }
 
-    //Ball
+    //Ball with wall collision
     if (ballHitbox.x > WIDTH - ballHitbox.w) {
         ballDirectionX = -1;
     }
@@ -184,6 +187,17 @@ void update(double deltaTime) {
     if (ballHitbox.y < 0) {
         ballDirectionY = 1;
     }
+
+    //Ball with paddle collision
+    if (ballHitbox.y + ballHitbox.h > paddle->y &&
+        ballHitbox.x >= paddle->x &&
+        ballHitbox.x <= paddle->x + paddle->width) 
+    { 
+
+        ballDirectionY = -1;
+
+    }
+
 
     ballHitbox.x += ballSpeed * ballDirectionX * deltaTime;
     ballHitbox.y += ballSpeed * ballDirectionY * deltaTime;
