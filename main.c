@@ -183,11 +183,6 @@ void update(double deltaTime) {
 
     ball->x += ball->directionX * ball->speed * deltaTime;
     ball->y += ball->directionY * ball->speed * deltaTime;
-    printf("Ball Speed: %d\n", ball->speed);
-    printf("Ball x: %d\n", ball->x);
-    printf("Ball y: %d\n", ball->y);
-    printf("Ball directionX: %d\n", ball->directionX);
-    printf("Ball directionY: %d\n", ball->directionY);
 }
 
 void render(SDL_Renderer* renderer) {
