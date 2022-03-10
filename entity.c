@@ -1,4 +1,4 @@
-#include "paddle.h"
+#include "entity.h"
 #include <stdlib.h>
 
 Paddle* createPaddle(int x, int y, int width, int height, int speed) {

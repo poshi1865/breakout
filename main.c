@@ -8,7 +8,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "draw.h"
-#include "paddle.h"
+#include "entity.h"
 
 
 #define WIDTH 1080

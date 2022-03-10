@@ -2,8 +2,9 @@
 #define DRAW_H_
 
 #include <SDL2/SDL.h>
-#include "paddle.h"
+#include "entity.h"
 
 void drawPaddle(Paddle* paddle, SDL_Renderer* renderer);
+void drawBall();
 
 #endif

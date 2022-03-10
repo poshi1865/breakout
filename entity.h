@@ -1,5 +1,5 @@
-#ifndef PADDLE_H_
-#define PADDLE_H_
+#ifndef ENTITY_H_
+#define ENTITY_H_
 
 struct Paddle {
     int x;
