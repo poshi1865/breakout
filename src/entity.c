@@ -1,5 +1,5 @@
-#include "entity.h"
 #include <stdlib.h>
+#include "../include/entity.h"
 
 Paddle* createPaddle(int x, int y, int width, int height, int speed) {
     Paddle* paddle = malloc(sizeof(Paddle));

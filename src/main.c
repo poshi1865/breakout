@@ -7,8 +7,8 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 
-#include "draw.h"
-#include "entity.h"
+#include "../include/draw.h"
+#include "../include/entity.h"
 
 
 #define WIDTH 1080
