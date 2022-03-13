@@ -26,6 +26,9 @@ bool keyUp, keyDown, keyLeft, keyRight;
 Paddle* paddle;
 Ball* ball;
 
+int mouseX;
+int mouseY;
+
 bool running = true;
 
 int main(void) {
@@ -85,8 +88,8 @@ int main(void) {
 
 void initEntities() {
     int w = 150;
-    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 5);
-    ball = createBall(WIDTH / 2, HEIGHT / 2, 20, 20, 1, 1, 4);
+    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 9);
+    ball = createBall(WIDTH / 2, HEIGHT / 2, 20, 20, 1, 1, 5);
 }
 
 void listenForKeyEvents() {
@@ -95,6 +98,11 @@ void listenForKeyEvents() {
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) 
             running = false;
+
+        if (e.type == SDL_MOUSEMOTION) {
+            SDL_GetMouseState(&mouseX, NULL);
+        }
+
         //If it is a key press
         if (e.type == SDL_KEYDOWN) {
             switch(e.key.keysym.sym) {
@@ -146,19 +154,15 @@ void update(double deltaTime) {
     //    paddle->y += (int)(paddle->speed * deltaTime);
     //}
     //
-    if (keyLeft) {
-        //Check for collision with left wall
-        if (paddle->x > 0) {
-            paddle->x -= (int)(paddle->speed * deltaTime);
-        }
+    
+    //Check for collision with left and right wall
+    
+    if ((paddle->x + ((paddle->width) / 2) != mouseX) && (paddle->x + ((paddle->width)/2) < mouseX)) {
+        paddle->x += (int)(paddle->speed * deltaTime);
     }
-    if (keyRight) {
-        //Check for collision with left wall
-        if (paddle->x < WIDTH - paddle->width) {
-            paddle->x += (int)(paddle->speed * deltaTime);
-        }
+    if (paddle->x + ((paddle->width) / 2) != mouseX && paddle->x + ((paddle->width)/2) > mouseX) {
+        paddle->x -= (int)(paddle->speed * deltaTime);
     }
-
 
     //CHECKING BALL COLLIDING WITH WALL
     if (ball->x >= WIDTH - ball->width) {
@@ -188,9 +192,11 @@ void update(double deltaTime) {
 void render(SDL_Renderer* renderer) {
 
     //Renderer color white
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
     //Clear Screen
     SDL_RenderClear(renderer);
+
+    //explodeAt(ball->x, ball->y, ball->directionX, ball-> directionY, renderer);
 
     //Drawing the ball and the paddle
     drawPaddle(paddle, renderer);

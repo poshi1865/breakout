@@ -20,3 +20,6 @@ void drawBall(Ball* ball, SDL_Renderer* renderer) {
         }
     }
 }
+
+void explodeAt(int x, int y, int directionX, int directionY, SDL_Renderer* renderer) {
+}
