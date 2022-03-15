@@ -88,7 +88,7 @@ int main(void) {
 
 void initEntities() {
     int w = 150;
-    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 9);
+    paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 5);
     ball = createBall(WIDTH / 2, HEIGHT / 2, 20, 20, 1, 1, 5);
 }
 
