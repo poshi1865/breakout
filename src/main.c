@@ -7,7 +7,6 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 
-#include "../include/draw.h"
 #include "../include/entity.h"
 
 
