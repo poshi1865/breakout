@@ -193,19 +193,31 @@ void update(double deltaTime) {
     }
 
     //CHECKING BALL COLLIDING WITH BRICK
-    
     for (int i = 0; i < BRICKS_NUMBER; i++) {
-        if (((ball->x + ball->width >= brick[i]->x && ball->x + ball->width <= brick[i]->x + brick[i] ->width) ||
-            (ball->x <= brick[i]->x + brick[i]->width && ball->x >= brick[i]->x)) &&
-            ball->y >= brick[i]->y && ball->y <= brick[i]->y + brick[i]->height) {
-            brick[i]->width = 0;
-            brick[i]->height = 0;
+
+        if (ball->y + ball->height >= brick[i]->y && ball->y + ball->height <= brick[i]->y + brick[i] ->height) {
+            if (ball->x + ball->width >= brick[i]->x && ball->x <= brick[i]->x + brick[i]->width) {
+
+                ball->directionY = -ball->directionY;
+
+                //removing bricks
+                brick[i]->width = 0;
+                brick[i]->height = 0;
+                brick[i]->x = -100;
+                brick[i]->y = -100;
+            }
         }
-        if (((ball->y + ball->height >= brick[i]->y && ball->y + ball->height <= brick[i]->y + brick[i]->height) ||
-            (ball->y <= brick[i]->y + brick[i]->height && ball->y >= brick[i]->y)) &&
-            ball->x + ball->width >= brick[i]->x && ball->x <= brick[i]->x + brick[i]->width) {
-            brick[i]->width = 0;
-            brick[i]->height = 0;
+        if (ball->y <= brick[i]->y + brick[i]->height && ball->y <= brick[i]->y) {
+            if (ball->x + ball->width >= brick[i]->x && ball->x <= brick[i]->x + brick[i]->width) {
+
+                ball->directionY = -ball->directionY;
+
+                //removing bricks
+                brick[i]->width = 0;
+                brick[i]->height = 0;
+                brick[i]->x = -100;
+                brick[i]->y = -100;
+            }
         }
     }
 
