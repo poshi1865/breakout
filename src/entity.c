@@ -55,6 +55,29 @@ void destroyBall(Ball* ball) {
     free(ball);
 }
 
+Brick* createBrick(int x, int y, int width, int height) {
+    Brick* brick = malloc(sizeof(Brick));
+    brick->x = x;
+    brick->y = y;
+    brick->width = width;
+    brick->height = height;
+
+    return brick;
+}
+
+void drawBrick(Brick* brick, SDL_Renderer* renderer) {
+    SDL_SetRenderDrawColor(renderer, 0x80, 0x00, 0x00, 0x00);
+    for (int i = brick->x; i < brick->width + brick->x; i++) {
+        for (int j = brick->y; j < brick->height + brick->y; j++) {
+            SDL_RenderDrawPoint(renderer, i, j);
+        }
+    }
+}
+
+void destroyBrick(Brick* brick) {
+    free(brick);
+}
+
 void explodeAt(int x, int y, int directionX, int directionY, SDL_Renderer* renderer) {
 }
 

@@ -34,6 +34,16 @@ void drawBall(Ball* ball, SDL_Renderer*  renderer);
 void destroyBall(Ball* ball);
 /* PADDLE END */
 
+/* BRICK */
+struct Brick {
+    int x;
+    int y;
+    int width;
+    int height;
+}typedef Brick;
+Brick* createBrick(int x, int y, int width, int height);
+void drawBrick(Brick* brick, SDL_Renderer* renderer);
+void destroyBrick(Brick* brick);
 
 void explodeAt(int x, int y, int directionX, int directionY, SDL_Renderer* renderer);
 

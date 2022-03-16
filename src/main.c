@@ -9,9 +9,9 @@
 
 #include "../include/entity.h"
 
-
 #define WIDTH 1080
 #define HEIGHT 720
+#define BRICKS_NUMBER 39
 
 void update();
 void render();
@@ -24,6 +24,7 @@ bool keyUp, keyDown, keyLeft, keyRight;
 //Entities
 Paddle* paddle;
 Ball* ball;
+Brick* brick[BRICKS_NUMBER];
 
 int mouseX;
 int mouseY;
@@ -77,6 +78,9 @@ int main(void) {
     // Cleanup
     destroyPaddle(paddle); 
     destroyBall(ball);
+    for (int i = 0; i < BRICKS_NUMBER; i++) {
+        destroyBrick(brick[i]);
+    }
     
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -89,6 +93,18 @@ void initEntities() {
     int w = 150;
     paddle = createPaddle(WIDTH / 2 - w, HEIGHT - 40, 150, 15, 5);
     ball = createBall(WIDTH / 2, HEIGHT / 2, 20, 20, 1, 1, 5);
+
+    int x = 50;
+    int y = 50;
+    int spaceBetweenBricks = 5;
+    for (int i = 0; i < BRICKS_NUMBER; i++) {
+        if (i > 0 && i % 13 == 0) {
+            y += brick[0]->height + spaceBetweenBricks;
+            x = 50;
+        }
+        brick[i] = createBrick(x, y, 70, 50);
+        x += brick[i]->width + spaceBetweenBricks;
+    }
 }
 
 void listenForKeyEvents() {
@@ -98,6 +114,7 @@ void listenForKeyEvents() {
         if (e.type == SDL_QUIT) 
             running = false;
 
+        //Mouse motion
         if (e.type == SDL_MOUSEMOTION) {
             SDL_GetMouseState(&mouseX, NULL);
         }
@@ -146,16 +163,7 @@ void listenForKeyEvents() {
 
 void update(double deltaTime) {
 
-    //if (keyUp) {
-    //    paddle->y -= (int)(paddle->speed * deltaTime); 
-    //}
-    //if (keyDown) {
-    //    paddle->y += (int)(paddle->speed * deltaTime);
-    //}
-    //
-    
-    //Check for collision with left and right wall
-    
+    //PADDLE MOVEMENT
     if ((paddle->x + ((paddle->width) / 2) != mouseX) && (paddle->x + ((paddle->width)/2) < mouseX)) {
         paddle->x += (int)(paddle->speed * deltaTime);
     }
@@ -184,6 +192,24 @@ void update(double deltaTime) {
         }
     }
 
+    //CHECKING BALL COLLIDING WITH BRICK
+    
+    for (int i = 0; i < BRICKS_NUMBER; i++) {
+        if (((ball->x + ball->width >= brick[i]->x && ball->x + ball->width <= brick[i]->x + brick[i] ->width) ||
+            (ball->x <= brick[i]->x + brick[i]->width && ball->x >= brick[i]->x)) &&
+            ball->y >= brick[i]->y && ball->y <= brick[i]->y + brick[i]->height) {
+            brick[i]->width = 0;
+            brick[i]->height = 0;
+        }
+        if (((ball->y + ball->height >= brick[i]->y && ball->y + ball->height <= brick[i]->y + brick[i]->height) ||
+            (ball->y <= brick[i]->y + brick[i]->height && ball->y >= brick[i]->y)) &&
+            ball->x + ball->width >= brick[i]->x && ball->x <= brick[i]->x + brick[i]->width) {
+            brick[i]->width = 0;
+            brick[i]->height = 0;
+        }
+    }
+
+    //BALL MOVEMENT
     ball->x += ball->directionX * ball->speed * deltaTime;
     ball->y += ball->directionY * ball->speed * deltaTime;
 }
@@ -200,6 +226,11 @@ void render(SDL_Renderer* renderer) {
     //Drawing the ball and the paddle
     drawPaddle(paddle, renderer);
     drawBall(ball, renderer);
+
+
+    for (int i = 0; i < BRICKS_NUMBER; i++) {
+        drawBrick(brick[i], renderer);
+    }
 
     // Present Buffer
     SDL_RenderPresent(renderer);
