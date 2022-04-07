@@ -65,10 +65,10 @@ Brick* createBrick(int x, int y, int width, int height) {
     return brick;
 }
 
-void drawBrick(Brick* brick, SDL_Renderer* renderer) {
-    SDL_SetRenderDrawColor(renderer, 0x80, 0x00, 0x00, 0x00);
+void drawBrick(Brick* brick, SDL_Renderer* renderer, int r, int g, int b) {
     for (int i = brick->x; i < brick->width + brick->x; i++) {
         for (int j = brick->y; j < brick->height + brick->y; j++) {
+            SDL_SetRenderDrawColor(renderer, r, g, b, b);
             SDL_RenderDrawPoint(renderer, i, j);
         }
     }

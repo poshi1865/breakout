@@ -42,7 +42,7 @@ struct Brick {
     int height;
 }typedef Brick;
 Brick* createBrick(int x, int y, int width, int height);
-void drawBrick(Brick* brick, SDL_Renderer* renderer);
+void drawBrick(Brick* brick, SDL_Renderer* renderer, int r, int g, int b);
 void destroyBrick(Brick* brick);
 
 void explodeAt(int x, int y, int directionX, int directionY, SDL_Renderer* renderer);

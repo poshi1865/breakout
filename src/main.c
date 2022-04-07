@@ -241,7 +241,7 @@ void render(SDL_Renderer* renderer) {
 
 
     for (int i = 0; i < BRICKS_NUMBER; i++) {
-        drawBrick(brick[i], renderer);
+        drawBrick(brick[i], renderer, 300, 230, 300);
     }
 
     // Present Buffer
