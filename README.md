@@ -1,1 +1,1 @@
-Using SDL2 to write a game in C.
+Breakout written in C with SDL2.
